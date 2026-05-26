@@ -853,22 +853,156 @@ function ProductCard({ product, onAdd, mode }) {
 
 function CartDrawer({ cart, onClose, onUpdateQty, onRemove, mode, onCheckout }) {
   const [step, setStep] = useState("cart");
-  const [form, setForm] = useState({ nome: "", telefone: "", endereco: "", numero: "", complemento: "", bairro: "", paymentMethod: "pix" });
+  const [form, setForm] = useState({
+    nome: "",
+    telefone: "",
+    endereco: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    paymentMethod: "pix",
+    cardName: "",
+    cardNumber: "",
+    cardExpiry: "",
+    cardCvv: "",
+  });
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const total = cart.reduce((s, i) => s + i.finalPrice * i.qty, 0);
+  const pixKey = "pix@acainograu.com";
+  const pixMessage = `PIX | Chave: ${pixKey} | Valor: R$ ${total.toFixed(2)} | Cliente: ${form.nome || "Seu pedido"}`;
+  const qrImage = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(pixMessage)}`;
 
-  const handleCheckout = () => {
-    if (mode === "delivery" && step === "cart") { setStep("form"); return; }
-    onCheckout(form);
+  const resetAndClose = () => {
+    setStep("cart");
+    setError("");
+    setSubmitting(false);
+    onClose();
+  };
+
+  const validateExpiry = (value) => {
+    const cleaned = value.replace(/\s+/g, "");
+    const match = cleaned.match(/^(0[1-9]|1[0-2])\/?([0-9]{2}|[0-9]{4})$/);
+    if (!match) return false;
+    const month = Number(match[1]);
+    const year = Number(match[2].length === 2 ? `20${match[2]}` : match[2]);
+    const expires = new Date(year, month - 1, 1);
+    const now = new Date();
+    return expires >= new Date(now.getFullYear(), now.getMonth(), 1);
+  };
+
+  const validateForm = () => {
+    if (!form.nome.trim()) {
+      setError("Informe o nome do cliente.");
+      return false;
+    }
+    if (!form.telefone.trim()) {
+      setError("Informe o telefone ou WhatsApp.");
+      return false;
+    }
+    if (mode === "delivery") {
+      if (!form.endereco.trim()) {
+        setError("Informe a rua ou avenida.");
+        return false;
+      }
+      if (!form.numero.trim()) {
+        setError("Informe o número do endereço.");
+        return false;
+      }
+      if (!form.bairro.trim()) {
+        setError("Informe o bairro.");
+        return false;
+      }
+    }
+    if (form.paymentMethod === "cartao") {
+      const digits = form.cardNumber.replace(/\D/g, "");
+      if (!form.cardName.trim()) {
+        setError("Informe o nome do titular do cartão.");
+        return false;
+      }
+      if (!/^\d{13,19}$/.test(digits)) {
+        setError("Número do cartão inválido.");
+        return false;
+      }
+      if (!validateExpiry(form.cardExpiry)) {
+        setError("Validade do cartão inválida.");
+        return false;
+      }
+      if (!/^\d{3,4}$/.test(form.cardCvv)) {
+        setError("CVV inválido.");
+        return false;
+      }
+    }
+    setError("");
+    return true;
+  };
+
+  const handleCheckout = async () => {
+    if (step === "cart") {
+      setStep("form");
+      setError("");
+      return;
+    }
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const delivery_address = mode === "delivery"
+      ? [form.endereco, form.numero, form.complemento, form.bairro].filter(Boolean).join(", ")
+      : null;
+
+    const paymentDetails = form.paymentMethod === "cartao"
+      ? {
+          cardholder: form.cardName,
+          last4: form.cardNumber.replace(/\D/g, "").slice(-4),
+          expiry: form.cardExpiry,
+        }
+      : {
+          pix_key: pixKey,
+          qr_data: pixMessage,
+        };
+
+    const orderPayload = {
+      customer_name: form.nome,
+      phone: form.telefone,
+      delivery_address,
+      items: cart.map(item => ({
+        id: item.id,
+        name: item.name,
+        qty: item.qty,
+        selectedOption: item.selectedOption,
+        unitPrice: item.finalPrice,
+        totalPrice: item.finalPrice * item.qty,
+      })),
+      total,
+      type: mode,
+      status: "novo",
+      payment_method: form.paymentMethod,
+      payment_details: paymentDetails,
+    };
+
+    try {
+      setSubmitting(true);
+      const result = onCheckout(orderPayload);
+      if (result?.then) {
+        await result;
+      }
+    } catch (err) {
+      setError(err?.message || "Erro ao enviar pedido. Tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <>
-      <div className="cart-overlay" onClick={onClose} />
+      <div className="cart-overlay" onClick={resetAndClose} />
       <div className="cart-drawer">
         <div className="cart-header">
           <span className="cart-title">🛒 Meu Pedido</span>
-          <button className="cart-close" onClick={onClose}>✕</button>
+          <button className="cart-close" onClick={resetAndClose}>✕</button>
         </div>
 
         {step === "cart" ? (
@@ -920,7 +1054,7 @@ function CartDrawer({ cart, onClose, onUpdateQty, onRemove, mode, onCheckout }) 
                 <span style={{ color: "var(--brand)" }}>R$ {total.toFixed(2)}</span>
               </div>
               <button className="checkout-btn" onClick={handleCheckout} disabled={cart.length === 0}>
-                {mode === "delivery" ? "📍 Informar Endereço →" : "✅ Finalizar Pedido"}
+                {mode === "delivery" ? "📍 Informar Endereço →" : "📝 Confirmar Dados"}
               </button>
             </div>
           </>
@@ -929,23 +1063,26 @@ function CartDrawer({ cart, onClose, onUpdateQty, onRemove, mode, onCheckout }) 
             <div className="cart-items" style={{ padding: "16px" }}>
               <h3 style={{ fontFamily: "'Baloo 2',cursive", fontWeight: 800, marginBottom: 16 }}>{mode === "delivery" ? "📍 Endereço de Entrega" : "🏪 Retirada na Lanchonete"}</h3>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {mode === "delivery" ? [
-                  { key: "nome", label: "Nome completo", full: true },
-                  { key: "telefone", label: "Telefone / WhatsApp", full: true },
-                  { key: "endereco", label: "Rua / Avenida", full: true },
-                  { key: "numero", label: "Número", full: false },
-                  { key: "complemento", label: "Complemento", full: false },
-                  { key: "bairro", label: "Bairro", full: true },
+                {(mode === "delivery" ? [
+                  { key: "nome", label: "Nome completo" },
+                  { key: "telefone", label: "Telefone / WhatsApp" },
+                  { key: "endereco", label: "Rua / Avenida" },
+                  { key: "numero", label: "Número" },
+                  { key: "complemento", label: "Complemento" },
+                  { key: "bairro", label: "Bairro" },
                 ] : [
-                  { key: "nome", label: "Nome completo", full: true },
-                  { key: "telefone", label: "Telefone / WhatsApp", full: true },
-                ]
-                  .map(f => (
-                    <div key={f.key}>
-                      <label>{f.label}</label>
-                      <input className="form-input" value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} />
-                    </div>
-                  ))}
+                  { key: "nome", label: "Nome completo" },
+                  { key: "telefone", label: "Telefone / WhatsApp" },
+                ]).map(field => (
+                  <div key={field.key}>
+                    <label>{field.label}</label>
+                    <input
+                      className="form-input"
+                      value={form[field.key]}
+                      onChange={e => setForm(p => ({ ...p, [field.key]: e.target.value }))}
+                    />
+                  </div>
+                ))}
               </div>
               <div style={{ marginTop: 18 }}>
                 <div style={{ fontWeight: 800, marginBottom: 10 }}>Forma de pagamento</div>
@@ -964,14 +1101,72 @@ function CartDrawer({ cart, onClose, onUpdateQty, onRemove, mode, onCheckout }) 
                   ))}
                 </div>
               </div>
+
+              {form.paymentMethod === "cartao" ? (
+                <div style={{ marginTop: 18, display: "grid", gap: 12 }}>
+                  <div>
+                    <label>Nome no cartão</label>
+                    <input
+                      className="form-input"
+                      value={form.cardName}
+                      onChange={e => setForm(p => ({ ...p, cardName: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <label>Número do cartão</label>
+                    <input
+                      className="form-input"
+                      value={form.cardNumber}
+                      onChange={e => setForm(p => ({ ...p, cardNumber: e.target.value }))}
+                      placeholder="0000 0000 0000 0000"
+                    />
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                    <div>
+                      <label>Validade</label>
+                      <input
+                        className="form-input"
+                        value={form.cardExpiry}
+                        onChange={e => setForm(p => ({ ...p, cardExpiry: e.target.value }))}
+                        placeholder="MM/AA"
+                      />
+                    </div>
+                    <div>
+                      <label>CVV</label>
+                      <input
+                        className="form-input"
+                        value={form.cardCvv}
+                        onChange={e => setForm(p => ({ ...p, cardCvv: e.target.value }))}
+                        placeholder="123"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ marginTop: 18, display: "grid", gap: 12 }}>
+                  <div style={{ fontWeight: 700 }}>Escaneie o QR code para pagar</div>
+                  <div style={{ display: "flex", justifyContent: "center" }}>
+                    <img src={qrImage} alt="PIX QR Code" style={{ width: 240, height: 240, borderRadius: 18, border: "1px solid #ffe0cc" }} />
+                  </div>
+                  <div style={{ fontSize: "0.9rem", color: "var(--muted)", lineHeight: 1.5 }}>
+                    Chave PIX: <strong>{pixKey}</strong>
+                    <br />Valor: <strong>R$ {total.toFixed(2)}</strong>
+                    <br />Após o pagamento, o pedido será registrado no sistema.
+                  </div>
+                </div>
+              )}
+
+              {error && (
+                <div style={{ marginTop: 16, color: "#b91c1c", fontWeight: 700 }}>{error}</div>
+              )}
             </div>
             <div className="cart-footer">
               <div className="cart-total-row">
                 <span>Total do Pedido</span>
                 <span style={{ color: "var(--brand)" }}>R$ {total.toFixed(2)}</span>
               </div>
-              <button className="checkout-btn" onClick={handleCheckout}>
-                🚀 Confirmar Pedido
+              <button className="checkout-btn" onClick={handleCheckout} disabled={submitting}>
+                {submitting ? "Enviando pedido..." : "🚀 Confirmar Pedido"}
               </button>
             </div>
           </>
@@ -1013,16 +1208,32 @@ function MenuView({ mode }) {
 
   const removeItem = (cartId) => setCart(prev => prev.filter(i => i.cartId !== cartId));
 
-  const handleCheckout = (form) => {
-    const code = "PED" + Math.floor(1000 + Math.random() * 9000);
-    setOrderCode(code);
-    setOrderMeta({
-      paymentMethod: form?.paymentMethod || "pix",
-      serviceType: mode === "delivery" ? "Delivery" : "Retirar na lanchonete",
-    });
-    setOrdered(true);
-    setCart([]);
-    setShowCart(false);
+  const handleCheckout = async (orderPayload) => {
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Erro ao salvar pedido");
+      }
+
+      const code = data.id ? `PED${data.id}` : `PED${Math.floor(1000 + Math.random() * 9000)}`;
+      setOrderCode(code);
+      setOrderMeta({
+        paymentMethod: orderPayload.payment_method || "pix",
+        serviceType: mode === "delivery" ? "Delivery" : "Retirar na lanchonete",
+      });
+      setOrdered(true);
+      setCart([]);
+      setShowCart(false);
+      return data;
+    } catch (error) {
+      console.error("Order submit error:", error);
+      throw error;
+    }
   };
 
   if (ordered) {
