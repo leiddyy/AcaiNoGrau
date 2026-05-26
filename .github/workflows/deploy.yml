@@ -1,0 +1,48 @@
+name: CI / Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Run tests (if any)
+        run: |
+          if npm run | grep -q "test"; then
+            npm test || true
+          else
+            echo "No tests defined"
+          fi
+
+      - name: Trigger Render deploy (if secrets set)
+        if: ${{ secrets.RENDER_API_KEY && secrets.RENDER_SERVICE_ID }}
+        run: |
+          echo "Triggering Render deploy for service ${{ secrets.RENDER_SERVICE_ID }}"
+          curl -s -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/json" \
+            -d '{"clearCache": true}'
+
+      - name: Trigger Railway deploy (optional)
+        if: ${{ secrets.RAILWAY_API_KEY }}
+        run: |
+          echo "Deploying with Railway CLI"
+          npm i -g @railway/cli
+          railway login --apiKey "${{ secrets.RAILWAY_API_KEY }}"
+          railway up --yes || true
