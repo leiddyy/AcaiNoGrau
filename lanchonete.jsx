@@ -797,6 +797,546 @@ const css = `
   .legend { display: flex; flex-direction: column; gap: 8px; }
   .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.83rem; }
   .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ─────────────────── RESPONSIVE DESIGN ─────────────────── */
+
+  /* TABLETS PEQUEÑOS - 480px a 768px */
+  @media (max-width: 768px) {
+    .nav {
+      padding: 0 16px;
+      height: 56px;
+    }
+    .nav-logo {
+      font-size: 1.2rem;
+    }
+    .nav-tab {
+      padding: 6px 12px;
+      font-size: 0.75rem;
+    }
+    .hero {
+      padding: 32px 16px 24px;
+    }
+    .hero h1 {
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+    }
+    .cat-filter {
+      padding: 12px 16px;
+      gap: 6px;
+    }
+    .cat-btn {
+      padding: 6px 12px;
+      font-size: 0.75rem;
+    }
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .product-emoji {
+      height: 80px;
+      font-size: 2.5rem;
+    }
+    .product-info {
+      padding: 10px 12px;
+    }
+    .product-name {
+      font-size: 0.9rem;
+    }
+    .product-price {
+      font-size: 1rem;
+    }
+    .cart-drawer {
+      width: min(380px, 100vw);
+    }
+    .cart-header {
+      padding: 16px 20px 12px;
+    }
+    .cart-title {
+      font-size: 1.1rem;
+    }
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    .delivery-form {
+      padding: 18px;
+      margin: 0 16px 16px;
+    }
+    .delivery-form h3 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+    }
+    .form-input {
+      padding: 9px 12px;
+      font-size: 0.85rem;
+    }
+    .success-title {
+      font-size: 1.5rem;
+    }
+    .order-code {
+      padding: 12px 24px;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+    }
+    .stat-value {
+      font-size: 1.5rem;
+    }
+    .bar-label {
+      width: 100px;
+      font-size: 0.75rem;
+    }
+    .dashboard-title {
+      font-size: 1.4rem;
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .dashboard-title > div {
+      width: 100%;
+      margin-left: 0 !important;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+    .stat-card {
+      padding: 16px;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+    }
+    .chart-title {
+      font-size: 0.9rem;
+    }
+    .table-section {
+      padding: 16px;
+    }
+    table {
+      font-size: 0.75rem;
+    }
+    th, td {
+      padding: 6px 8px;
+    }
+  }
+
+  /* TELEFONES MEDIANOS - 360px a 480px */
+  @media (max-width: 480px) {
+    * {
+      box-sizing: border-box;
+    }
+    .nav {
+      padding: 0 12px;
+      height: 52px;
+      gap: 8px;
+    }
+    .nav-logo {
+      font-size: 1rem;
+      gap: 4px;
+    }
+    .nav-tab {
+      padding: 4px 8px;
+      font-size: 0.65rem;
+      border-radius: 6px;
+    }
+    .nav-cart {
+      width: 38px;
+      height: 38px;
+      font-size: 1rem;
+    }
+    .hero {
+      padding: 24px 12px 16px;
+      margin-bottom: 0;
+    }
+    .hero h1 {
+      font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+      line-height: 1.3;
+    }
+    .hero p {
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+    .mode-btn {
+      padding: 8px 16px;
+      font-size: 0.8rem;
+    }
+    .cat-filter {
+      padding: 10px 12px;
+      gap: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .cat-btn {
+      padding: 5px 10px;
+      font-size: 0.7rem;
+      border-radius: 8px;
+    }
+    .products-section {
+      padding: 14px 12px 80px;
+    }
+    .cat-title {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .product-card {
+      border-radius: 14px;
+    }
+    .product-emoji {
+      height: 70px;
+      font-size: 2rem;
+    }
+    .product-info {
+      padding: 8px 10px;
+    }
+    .product-name {
+      font-size: 0.8rem;
+    }
+    .product-desc {
+      font-size: 0.7rem;
+      max-height: 36px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .product-price {
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+    .opt-chip {
+      font-size: 0.65rem;
+      padding: 3px 8px;
+    }
+    .qty-row {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      font-size: 0.95rem;
+    }
+    .add-btn {
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+    }
+    .cart-drawer {
+      width: 100vw;
+      right: 0;
+      left: 0;
+      border-radius: 20px 20px 0 0;
+      animation: slideUpMobile 0.3s ease-out;
+    }
+    @keyframes slideUpMobile {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+    .cart-header {
+      padding: 14px 16px 10px;
+    }
+    .cart-title {
+      font-size: 1rem;
+    }
+    .cart-close {
+      width: 32px;
+      height: 32px;
+      font-size: 0.9rem;
+    }
+    .cart-items {
+      padding: 12px 16px;
+    }
+    .cart-item {
+      gap: 10px;
+      padding: 10px 0;
+    }
+    .cart-item-emoji {
+      font-size: 1.8rem;
+      width: 36px;
+    }
+    .cart-item-name {
+      font-size: 0.8rem;
+    }
+    .cart-item-meta {
+      font-size: 0.7rem;
+    }
+    .cart-footer {
+      padding: 12px 16px 20px;
+    }
+    .cart-total-row {
+      font-size: 1rem;
+    }
+    .checkout-btn {
+      padding: 13px;
+      font-size: 0.95rem;
+      border-radius: 12px;
+    }
+    .delivery-form {
+      padding: 14px;
+      margin: 0 12px 12px;
+      border-radius: 14px;
+    }
+    .delivery-form h3 {
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
+    .form-input {
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      border-radius: 10px;
+    }
+    .form-grid {
+      gap: 10px;
+    }
+    .payment-methods {
+      gap: 8px;
+    }
+    .payment-option {
+      padding: 10px 12px;
+      font-size: 0.75rem;
+    }
+    label {
+      font-size: 0.75rem;
+      margin-bottom: 3px;
+    }
+    .success-screen {
+      min-height: 50vh;
+      padding: 24px 16px;
+    }
+    .success-emoji {
+      font-size: 3.5rem;
+    }
+    .success-title {
+      font-size: 1.3rem;
+      margin: 12px 0 6px;
+    }
+    .success-sub {
+      font-size: 0.85rem;
+      margin-bottom: 18px;
+    }
+    .order-code {
+      padding: 12px 20px;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+    .back-btn {
+      padding: 12px 24px;
+      font-size: 0.9rem;
+    }
+    .atendente-layout {
+      grid-template-columns: 1fr;
+    }
+    .atendente-cart {
+      height: auto;
+      border-left: none;
+      border-top: 2px solid #ffe0cc;
+      position: static;
+      max-height: 50vh;
+    }
+    .atendente-menu {
+      padding-bottom: 20px;
+    }
+    .dashboard {
+      padding: 14px;
+    }
+    .dashboard-title {
+      font-size: 1.2rem;
+      margin-bottom: 16px;
+    }
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      padding: 12px;
+      border-radius: 14px;
+      border-left-width: 3px;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+    }
+    .stat-value {
+      font-size: 1.2rem;
+      margin-top: 4px;
+    }
+    .stat-sub {
+      font-size: 0.65rem;
+      margin-top: 3px;
+    }
+    .charts-row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .chart-card {
+      padding: 14px;
+      border-radius: 14px;
+    }
+    .chart-title {
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+    .bar-row {
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .bar-label {
+      width: 80px;
+      font-size: 0.7rem;
+    }
+    .bar-count {
+      width: 24px;
+      font-size: 0.7rem;
+    }
+    .donut-chart {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 12px;
+    }
+    .donut-pct {
+      font-size: 1.2rem;
+    }
+    .donut-label {
+      font-size: 0.6rem;
+    }
+    .legend-item {
+      font-size: 0.75rem;
+    }
+    .table-section {
+      padding: 12px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+    }
+    .table-title {
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    table {
+      font-size: 0.65rem;
+    }
+    th {
+      padding: 5px 6px;
+      font-size: 0.6rem;
+    }
+    td {
+      padding: 6px 5px;
+    }
+    .badge {
+      padding: 2px 6px;
+      font-size: 0.6rem;
+    }
+    .badge-delivery, .badge-presencial, .badge-entregue, .badge-preparo, .badge-saiu {
+      border-radius: 999px;
+    }
+    /* FLOATING CART */
+    .floating-cart-btn {
+      bottom: 16px;
+      right: 12px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      border-radius: 20px;
+    }
+    .floating-cart-btn span {
+      font-size: 0.75rem;
+    }
+  }
+
+  /* TELEFONES MUY PEQUEÑOS - < 360px */
+  @media (max-width: 360px) {
+    .hero h1 {
+      font-size: 1rem;
+    }
+    .product-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .product-emoji {
+      height: 60px;
+      font-size: 1.8rem;
+    }
+    .cart-drawer {
+      border-radius: 16px 16px 0 0;
+    }
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    .form-input {
+      font-size: 16px; /* Para evitar zoom en iOS */
+    }
+    .opt-chip {
+      font-size: 0.6rem;
+      padding: 2px 6px;
+    }
+  }
+
+  /* TABLETS GRANDES - 768px a 1024px */
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .charts-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* DESKTOPS - > 1024px */
+  @media (min-width: 1025px) {
+    .product-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    .stats-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+    .charts-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* ORIENTACIÓN */
+  @media (orientation: landscape) and (max-height: 600px) {
+    .nav {
+      height: 48px;
+    }
+    .hero {
+      padding: 16px 24px 12px;
+    }
+    .products-section {
+      padding: 12px 24px 60px;
+    }
+    .cart-drawer {
+      height: 100vh;
+    }
+    .atendente-layout {
+      min-height: calc(100vh - 48px);
+    }
+  }
+
+  /* TOUCH DEVICES */
+  @media (hover: none) and (pointer: coarse) {
+    .product-card:hover {
+      transform: none;
+    }
+    .stat-card:hover {
+      transform: none;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+  }
+
+  /* HIGH DPI */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  }
 `;
 
 // ─────────────────────── COMPONENTS ───────────────────────
@@ -1285,7 +1825,7 @@ function MenuView({ mode }) {
       </div>
 
       {/* FLOATING CART */}
-      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 150 }}>
+      <div style={{ position: "fixed", bottom: 24, right: 24, zIndex: 150 }} className="floating-cart-btn">
         {totalItems > 0 && (
           <button
             onClick={() => setShowCart(true)}
@@ -1303,10 +1843,13 @@ function MenuView({ mode }) {
               display: "flex",
               alignItems: "center",
               gap: 10,
-              animation: "bounce 0.4s"
+              animation: "bounce 0.4s",
+              transition: "all 0.2s ease"
             }}
           >
-            🛒 Ver Carrinho ({totalItems}) · R$ {cart.reduce((s, i) => s + i.finalPrice * i.qty, 0).toFixed(2)}
+            <span>🛒</span>
+            <span style={{ display: "inline" }}>Ver Carrinho <strong>({totalItems})</strong></span>
+            <span style={{ display: "none", fontWeight: 800 }}>R$ {cart.reduce((s, i) => s + i.finalPrice * i.qty, 0).toFixed(2)}</span>
           </button>
         )}
       </div>
