@@ -1802,7 +1802,7 @@ function MenuView({ mode }) {
   return (
     <>
       <div className="hero">
-        <h1>🍦 <span>Gelado</span> & <span>Gostoso</span></h1>
+        <h1>🍦 <span>Salgados</span> & <span>Gelados</span></h1>
         <p>{mode === "delivery" ? "🛵 Peça agora e receba em casa!" : "🏪 Bem-vindo ao nosso balcão!"}</p>
         <div className="mode-toggle" style={{ display: "none" }} />
       </div>
