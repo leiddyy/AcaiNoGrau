@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,6 +22,9 @@ const pool = new Pool({
 
 app.use(cors({ origin: true }));
 app.use(express.json());
+
+// Serve static files from dist (React app)
+app.use(express.static(path.join(__dirname, "dist")));
 
 app.get("/api/health", async (req, res) => {
   try {
@@ -102,6 +106,11 @@ app.post("/api/orders", async (req, res) => {
 
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
+});
+
+// SPA fallback: serve index.html for non-API routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 app.listen(port, () => {
