@@ -1802,7 +1802,7 @@ function MenuView({ mode }) {
   return (
     <>
       <div className="hero">
-        <h1>🍦 <span>Salgados</span> & <span>Gelados</span></h1>
+        <h1>🍦 <span>Gelado</span> & <span>Gostoso</span></h1>
         <p>{mode === "delivery" ? "🛵 Peça agora e receba em casa!" : "🏪 Bem-vindo ao nosso balcão!"}</p>
         <div className="mode-toggle" style={{ display: "none" }} />
       </div>
@@ -2246,7 +2246,7 @@ export default function App() {
       <style>{css}</style>
       <div className="app">
         <nav className="nav">
-          <div className="nav-logo">🍦 Gelado & Gostoso</div>
+          <div className="nav-logo">🍦 Salgados & Gelados</div>
           <div className="nav-tabs">
             <button className={`nav-tab ${tab === "delivery" ? "active" : ""}`} onClick={() => handleTab("delivery")}>🛵 Delivery</button>
             <button className={`nav-tab ${tab === "presencial" ? "active" : ""}`} onClick={() => handleTab("presencial")}>🏪 Presencial</button>
